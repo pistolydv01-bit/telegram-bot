@@ -1,17 +1,26 @@
 import os
-from openai import OpenAI
+import logging
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
+import google.generativeai as genai
 
-# नया और सही Telegram Bot Token और OpenAI API Key
+# Telegram Bot Token (आपका पुराना वाला)
 TELEGRAM_BOT_TOKEN = "8774660739:AAEiQRS-b7inYvsH7i5EO0eRD5reoCu74ek"
-OPENAI_API_KEY = "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"
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+# Google Gemini API Key (आपकी नई वाली)
+GEMINI_API_KEY = "AQ.Ab8RN6JR_HKd-yKpTBCCvLrphrIIt-XhdtRozsVnBhAYXmfzmg"
+
+# Gemini को कॉन्फ़िगर करें
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel("gemini-2.5-flash")
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 
 # ReportLab से कलरफुल पीडीएफ बनाने का फंक्शन
 def generate_pdf(text_content, filename="questions_output.pdf"):
@@ -51,17 +60,13 @@ def generate_pdf(text_content, filename="questions_output.pdf"):
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text
-    await update.message.reply_text("⏳ चैटजीपीटी आपके सवालों को व्यवस्थित कर रहा है, पीडीएफ तैयार हो रही है...")
+    await update.message.reply_text("⏳ जेमिनी (Gemini) आपके सवालों को व्यवस्थित कर रहा है, पीडीएफ तैयार हो रही है...")
 
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant. Format the given raw questions cleanly, line by line, so they are ready for a document."},
-                {"role": "user", "content": user_text}
-            ]
-        )
-        ai_output = response.choices[0].message.content
+        # OpenAI की जगह Gemini से सवाल व्यवस्थित करवा रहे हैं
+        prompt = f"Format the given raw questions cleanly, line by line, so they are ready for a document:\n\n{user_text}"
+        response = model.generate_content(prompt)
+        ai_output = response.text
 
         pdf_filename = "questions_output.pdf"
         generate_pdf(ai_output, pdf_filename)
