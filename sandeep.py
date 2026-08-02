@@ -9,7 +9,7 @@ from reportlab.lib import colors
 
 # नया और सही Telegram Bot Token और OpenAI API Key
 TELEGRAM_BOT_TOKEN = "8774660739:AAEiQRS-b7inYvsH7i5EO0eRD5reoCu74ek"
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
