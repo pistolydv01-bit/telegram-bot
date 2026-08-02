@@ -6,17 +6,16 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
-import google.generativeai as genai
+from google import genai
 
-# Telegram Bot Token (आपका पुराना वाला)
+# Telegram Bot Token
 TELEGRAM_BOT_TOKEN = "8774660739:AAEiQRS-b7inYvsH7i5EO0eRD5reoCu74ek"
 
-# Google Gemini API Key (आपकी नई वाली)
-GEMINI_API_KEY = "AQ.Ab8RN6JR_HKd-yKpTBCCvLrphrIIt-XhdtRozsVnBhAYXmfzmg"
+# Google Gemini API Key (आपकी दी हुई असली की)
+GEMINI_API_KEY = "AQ.Ab8RN6KSiymrWh8X9Mci2QA6dUWSoYQlxbfkPO8Z9s3nkiGeBg"
 
-# Gemini को कॉन्फ़िगर करें
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-2.5-flash")
+# नए और सही तरीके से क्लाइंट इनिशियलाइज किया है
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -63,9 +62,13 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("⏳ जेमिनी (Gemini) आपके सवालों को व्यवस्थित कर रहा है, पीडीएफ तैयार हो रही है...")
 
     try:
-        # OpenAI की जगह Gemini से सवाल व्यवस्थित करवा रहे हैं
         prompt = f"Format the given raw questions cleanly, line by line, so they are ready for a document:\n\n{user_text}"
-        response = model.generate_content(prompt)
+        
+        # जेमिनी से रिस्पॉन्स लेने का सही तरीका
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+        )
         ai_output = response.text
 
         pdf_filename = "questions_output.pdf"
