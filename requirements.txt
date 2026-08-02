@@ -1,0 +1,3 @@
+google-genai
+reportlab
+python-telegram-bot
