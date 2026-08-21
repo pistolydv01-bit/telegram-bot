@@ -1,4 +1,0 @@
-pyTelegramBotAPI
-python-dotenv
-selenium
-flask
